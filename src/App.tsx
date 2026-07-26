@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
+import { BannerSlider } from './components/BannerSlider';
 import { HeroSection } from './components/HeroSection';
 import { ServicesSection } from './components/ServicesSection';
 import { ServiceDetailModal } from './components/ServiceDetailModal';
@@ -12,6 +13,7 @@ import { BlogSection } from './components/BlogSection';
 import { ArticleReaderModal } from './components/ArticleReaderModal';
 import { AiIsoConsultantModal } from './components/AiIsoConsultantModal';
 import { InternalLeadsAdmin } from './components/InternalLeadsAdmin';
+import { AdminLoginPage, InternalUser } from './components/AdminLoginPage';
 import { Footer } from './components/Footer';
 import { IsoService, CaseStudy, Article } from './types';
 import { ISO_SERVICES } from './data/isoData';
@@ -28,6 +30,9 @@ export default function App() {
 
   const [aiConsultantModalOpen, setAiConsultantModalOpen] = useState(false);
   const [unreadLeadsCount, setUnreadLeadsCount] = useState(1);
+
+  // Authentication state for internal team portal
+  const [internalUser, setInternalUser] = useState<InternalUser | null>(null);
 
   // Scroll to top on tab change
   useEffect(() => {
@@ -53,9 +58,20 @@ export default function App() {
   };
 
   if (activeTab === 'admin-portal') {
+    if (!internalUser) {
+      return (
+        <AdminLoginPage
+          onBackToWebsite={() => setActiveTab('home')}
+          onLoginSuccess={(user) => setInternalUser(user)}
+        />
+      );
+    }
+
     return (
       <InternalLeadsAdmin 
         onBackToWebsite={() => setActiveTab('home')}
+        currentUser={internalUser}
+        onLogout={() => setInternalUser(null)}
       />
     );
   }
@@ -76,7 +92,8 @@ export default function App() {
       <main>
         {activeTab === 'home' && (
           <>
-            <HeroSection
+            {/* Integrated Corporate Header Banner Slider */}
+            <BannerSlider
               onOpenConsultationModal={handleOpenConsultationModal}
               onGoToGapAnalysis={() => setActiveTab('gap-analysis')}
               onSelectIsoService={handleSelectIsoShortcut}

@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Lead, LeadStatus } from '../types';
-import { Users, Filter, Search, Download, CheckCircle, Clock, Send, AlertCircle, Building, Mail, Phone, Calendar, ArrowLeft, RefreshCw, MessageSquare } from 'lucide-react';
+import { InternalUser } from './AdminLoginPage';
+import { Users, Filter, Search, Download, CheckCircle, Clock, Send, AlertCircle, Building, Mail, Phone, Calendar, ArrowLeft, RefreshCw, MessageSquare, LogOut, UserCheck } from 'lucide-react';
 
 interface InternalLeadsAdminProps {
   onBackToWebsite: () => void;
+  currentUser?: InternalUser | null;
+  onLogout?: () => void;
 }
 
-export const InternalLeadsAdmin: React.FC<InternalLeadsAdminProps> = ({ onBackToWebsite }) => {
+export const InternalLeadsAdmin: React.FC<InternalLeadsAdminProps> = ({ 
+  onBackToWebsite,
+  currentUser,
+  onLogout
+}) => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('Semua');
@@ -145,7 +152,17 @@ export const InternalLeadsAdmin: React.FC<InternalLeadsAdminProps> = ({ onBackTo
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {currentUser && (
+              <div className="flex items-center gap-2 bg-[#F5F5F3] px-3 py-1.5 border border-[#1A1A1A]/15 text-xs font-mono">
+                <UserCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+                <div className="leading-tight">
+                  <div className="font-bold text-[#1A1A1A]">{currentUser.name}</div>
+                  <div className="text-[9px] text-[#1A1A1A]/60">{currentUser.role}</div>
+                </div>
+              </div>
+            )}
+
             <button
               onClick={fetchLeads}
               className="p-2.5 border border-[#1A1A1A]/20 hover:border-[#1A1A1A] text-[#1A1A1A] bg-[#FDFDFB] transition flex items-center gap-1.5 text-xs font-mono font-semibold"
@@ -160,6 +177,16 @@ export const InternalLeadsAdmin: React.FC<InternalLeadsAdminProps> = ({ onBackTo
               <Download className="w-4 h-4" />
               <span>Export CSV</span>
             </button>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="p-2.5 border border-rose-300 text-rose-800 hover:bg-rose-50 transition flex items-center gap-1 text-xs font-mono font-bold uppercase tracking-wider"
+                title="Keluar dari Portal"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden md:inline">Keluar</span>
+              </button>
+            )}
           </div>
         </div>
 
